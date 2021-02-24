@@ -2,12 +2,15 @@ class Category:
     def __init__(self, cat_name):
         self.cat_name = cat_name
         self.ledger = []
-        #title = cat_name.center(30, '*')
-        #formatted_ledger = []
-        #for k, v in self.ledger.items():
-            #formatted_ledger.append(f"{k[:24]} {v.rjust(7)}\n")
+    
+    def __str__(self):    
+        formatted_ledger = []
+        for item in self.ledger:
+            for value in item.values():
+                if type(value) == str:
+                    formatted_ledger.append(f"{item['description'][:23].ljust(23)} {format(item['amount'], '.2f').rjust(6)}\n")
         
-        #return f"{title}\n{formatted_ledger}\n'Total:' {self.cat_name.get_balance()}"
+        return f"{self.cat_name.center(30, '*')}\n{''.join(formatted_ledger)}Total: {self.get_balance()}"
 
     def deposit(self, deposit_amt, deposit_desc=""):
         self.deposit_amt = deposit_amt
@@ -19,6 +22,7 @@ class Category:
         self.withdraw_desc = withdraw_desc
         if self.check_funds(withdraw_amt):
             self.ledger.append({'amount': -1 * withdraw_amt, 'description': withdraw_desc})
+            return True
         else:
             return False
 
@@ -27,18 +31,19 @@ class Category:
         for item in self.ledger:
             for value in item.values():
                 try:
-                    self.balance + float(value)
+                    self.balance += float(value)
                 except ValueError:
                     pass
             
         return self.balance
 
-    def transfer(self, trans_amt, category):
+    def transfer(self, trans_amt, cat):
         self.trans_amt = trans_amt
-        self.category = category
-        if self.category.check_funds(trans_amt):
-            self.category.withdraw(trans_amt, f"Transfer to {self.cat_name}")
-            self.deposit(trans_amt, f"Transfer from {category}")
+        self.cat = cat
+        if self.check_funds(trans_amt):
+            self.withdraw(trans_amt, f"Transfer to {cat.cat_name}")
+            self.cat.deposit(trans_amt, f"Transfer from {self.cat_name}")
+            return True
         else:
             return False
 
