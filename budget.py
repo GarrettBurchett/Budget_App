@@ -69,6 +69,7 @@ def percentage_spend_per_category(categories, total_spent):
     return category_spending
 
 def stacked_category_names(categories):
+    """Creates the category names to be vertically stacked for the spend chart."""
     formatted_categories = ""
     len_of_longest_name = 0
     for category in categories:
@@ -86,7 +87,11 @@ def stacked_category_names(categories):
                 else:
                     row.append("   ")
             row_of_letters = "".join(row)
-            formatted_categories += row_of_letters + "\n"
+            row.clear()
+            if count == len_of_longest_name: # Unit Test failed for having \n on last line. Needed everywhere else.
+                formatted_categories += row_of_letters
+            else:
+                formatted_categories += row_of_letters + "\n"
             count += 1
     
     return formatted_categories
